@@ -1,0 +1,276 @@
+/*
+Theme Name: nexTab Block Theme Template
+Theme URI: https://nextab.de
+Author: nexTab – Oliver Gehrmann
+Author URI: https://nextab.de
+Description: Modern WordPress Full Site Editing (FSE) block theme template with clean architecture and reusable components. Built by nexTab for flexible, maintainable WordPress projects.
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 8.3
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: nxt-block-theme
+Tags: block-theme, fse, full-site-editing, custom-blocks
+*/
+@use "sass:color";
+
+@use 'assets/css/nxt-cheatsheet' as *;
+// @use 'assets/css/nxt_swiper' as *; // Add project-specific swiper styles if needed
+// @use 'assets/css/nxt_timeline' as *; // Add timeline styles if needed
+@use 'assets/css/_nxt_header' as *;
+
+/* #region Overwrite Gutenberg Special Crap */
+:where(.wp-site-blocks) > *, :root :where(.is-layout-constrained):not(section) > * {
+	margin-block-start: 0;
+}
+.align_flex_start.is-layout-flex {
+	align-items: flex-start;
+}
+.wp-block-buttons.is-content-justification-center.is-layout-flex {
+	justify-content: center;
+	width: 100%;
+}
+.entry-content {
+	> section {
+		> *:not(.alignfull, .wp-block-cover__background) {
+			width: 90%;
+		}
+		&.wp-block-cover {
+			> img.wp-block-cover__image-background {
+				width: 100%;
+			}
+		}
+	}
+}
+/* #endregion Overwrite Gutenberg Special Crap */
+
+/* #region Normalization */
+*, *::before, *::after {
+	box-sizing: border-box;
+}
+*:not(dialog) {
+	margin: 0;
+}
+html {
+	font-size: 16px;
+	scroll-behavior: smooth !important;
+}
+body {
+	-webkit-font-smoothing: antialiased;
+	font-size: 100%;
+	line-height: 1.6;
+	position: relative;
+}
+img, picture, video, canvas, svg {
+	display: block;
+	max-width: 100%;
+}
+.sticky {
+	position: sticky;
+	top: 135px;
+}
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		interpolate-size: allow-keywords;
+	}
+}
+/* #endregion Normalization */
+
+/* #region Typography */
+p {
+	text-wrap: pretty;
+}
+.is-style-highlight-text {
+	font-family: $serif-font;
+	font-size: $large-font-size;
+	font-weight: 300;
+}
+h1, h2, h3, h4, h5, h6 {
+	line-height: 1.2;
+	text-wrap: balance;
+	a, a:where(:link, :visited, :focus, :-webkit-any-link) {
+		color: inherit;
+		cursor: pointer;
+	}
+	div > & {
+		margin-top: 0;
+	}
+}
+h1, h2 {
+	margin-bottom: $sp50;
+	.is-style-long-text * + & {
+		margin-top: $sp60;
+	}
+}
+.h2-style {
+	font-size: $h2-font-size;
+	font-weight: 700;
+	line-height: 1.15;
+}
+.has-h2-font-size-font-size {
+	> h1 {
+		font-size: $h2-font-size;
+	}
+}
+h3, h4, h5 {
+	margin-bottom: $sp40;
+	.is-style-long-text * + & {
+		margin-top: $sp50;
+	}
+}
+p + * {
+	margin-top: $sp40;
+}
+.is-layout-flow {
+	p + p, * + blockquote, blockquote + * {
+		margin-top: $sp40;
+	}
+}
+:root :where(.is-layout-constrained, .is-layout-flow) > {
+	h1, h2 {
+		margin-bottom: $sp50;
+		&.is-style-no-margin {
+			margin-bottom: 0;
+		}
+	}
+	h3, h4, h5 {
+		margin-bottom: $sp40;
+		&.is-style-no-margin {
+			margin-bottom: 0;
+		}
+	}
+}
+.has-white-color > :where(h1, h2, h3, h4, h5, h6) {
+	color: $white;
+}
+/* #endregion Typography */
+
+/* #region Blockquotes */
+blockquote {
+	border: none;
+	font-family: $serif-font;
+	font-size: $medium-font-size;
+	font-style: italic;
+	padding-left: 0;
+	cite {
+		text-align: right;
+		&::before {
+			content: "-";
+			margin-right: 5px;
+		}
+	}
+}
+/* #endregion Blockquotes */
+
+/* #region Lists */
+ul.wp-block-list {
+	@extend %pretty-list;
+}
+/* #endregion Lists */
+
+/* #region Blocks */
+/* #region Buttons */
+.et_pb_button {
+	@extend %pretty-button;
+	&.white_button {
+		@extend %white-button;
+	}
+}
+.wp-block-button {
+	.wp-element-button {
+		@extend %pretty-button;
+	}
+	&.is-style-white-button {
+		.wp-element-button {
+			@extend %white-button;
+		}
+	}
+	&.pdf-download, &.is-style-download-button {
+		.wp-element-button::after {
+			background-color: $secondary;
+			mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 640'%3E%3C!--!Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.--%3E%3Cpath d='M352 96C352 78.3 337.7 64 320 64C302.3 64 288 78.3 288 96L288 306.7L246.6 265.3C234.1 252.8 213.8 252.8 201.3 265.3C188.8 277.8 188.8 298.1 201.3 310.6L297.3 406.6C309.8 419.1 330.1 419.1 342.6 406.6L438.6 310.6C451.1 298.1 451.1 277.8 438.6 265.3C426.1 252.8 405.8 252.8 393.3 265.3L352 306.7L352 96zM160 384C124.7 384 96 412.7 96 448L96 480C96 515.3 124.7 544 160 544L480 544C515.3 544 544 515.3 544 480L544 448C544 412.7 515.3 384 480 384L433.1 384L376.5 440.6C345.3 471.8 294.6 471.8 263.4 440.6L206.9 384L160 384zM464 440C477.3 440 488 450.7 488 464C488 477.3 477.3 488 464 488C450.7 488 440 477.3 440 464C440 450.7 450.7 440 464 440z'/%3E%3C/svg%3E");
+		}
+	}
+}
+.wp-block-post-excerpt__more-link {
+	@extend %naked-button;
+}
+/* #endregion Buttons */
+
+/* #region Call to Action */
+.wp-block-nxt-call-to-action {
+	background-color: $primary;
+	border-radius: $br-medium;
+	color: $white;
+	padding: $sp60 $sp50;
+	position: relative;
+	text-align: center;
+	h3 {
+		color: $white;
+	}
+	p {
+		color: $white;
+		margin-top: 0;
+	}
+	.nxt_cta_button_wrapper {
+		margin-top: $sp50;
+		.wp-element-button {
+			@extend %pretty-button;
+		}
+	}
+	&.is-style-white {
+		background-color: $white;
+		color: $primary;
+		.nxt_cta_headline h3,
+		.nxt_cta_content p {
+			color: $primary;
+		}
+	}
+	&.text-left {
+		text-align: left;
+	}
+}
+/* #endregion Call to Action */
+/* #region Info Boxes */
+.wp-block-nxt-info-box.nxt-info-box {
+	background-color: $light-background;
+	border-radius: $br-medium;
+	font-size: $medium;
+	margin-bottom: $sp60;
+	margin-top: $sp60;
+	padding: $sp50;
+	.info-box-icon {
+		display: flex;
+		justify-content: center;
+		margin-bottom: $sp30;
+		pointer-events: none;
+		svg {
+			fill: $primary;
+			height: 2.5rem;
+			width: 2.5rem;
+		}
+	}
+}
+/* #endregion Info Boxes */
+/* #endregion Blocks */
+
+/* #region Layouts */
+.wp-block-columns {
+	&.is-style-column-4-2-1 {
+		/* #region width <= 1180px */
+		@media only screen and (width <= 1180px) {
+			flex-flow: wrap !important;
+			.wp-block-column {
+				flex-basis: calc((100% - var(--wp--preset--spacing--40)) / 2);
+			}
+		}
+		/* #endregion width <= 1180px */
+	}
+}
+.wp-block-group {
+	&.is-style-group-slider-container {
+		overflow: hidden;
+	}
+}
+/* #endregion Layouts */
