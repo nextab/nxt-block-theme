@@ -335,14 +335,3 @@ function shy_shortcode($atts, $content = null) {
 }
 add_shortcode('shy', 'shy_shortcode');
 #endregion Shy Shortcode
-
-#region Taxonomy-based Template Routing (replaces Divi Theme Builder functionality)
-/**
- * Taxonomy-based Template Routing
- * 
- * This replaces Divi's Theme Builder "Assign to pages with taxonomy X" feature.
- * 
- * Configure mappings via: Appearance → Template Routing
- */
-require_once get_stylesheet_directory() . '/inc/taxonomy-template-routing.php';
-#endregion Taxonomy-based Template Routing
