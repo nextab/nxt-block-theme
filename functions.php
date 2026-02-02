@@ -94,6 +94,7 @@ function enqueue_theme_styles() {
 	// Enqueue the main stylesheet
 	wp_enqueue_style('theme_styles', get_stylesheet_uri(), [], filemtime(get_stylesheet_directory() . '/style.css'), 'all');
 	wp_register_script('frontend_scripts', get_stylesheet_directory_uri() . '/assets/js/frontend_scripts.js', false, '', true);
+	wp_enqueue_script('frontend_scripts');
 }
 add_action('wp_enqueue_scripts', 'enqueue_theme_styles', 999);
 #endregion Enqueue custom styles in frontend
