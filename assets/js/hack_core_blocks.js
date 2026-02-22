@@ -134,3 +134,77 @@ wp.blocks.registerBlockStyle('core/heading', {
 	);
 })(window.wp);
 //#endregion
+
+//#region Auto-expand Padding/Margin controls and unlink values by default
+(function() {
+	function enableAndExpandSpacingControls() {
+		const dimensionsPanel = document.querySelector('.dimensions-block-support-panel');
+		if (!dimensionsPanel) return;
+		
+		const menuButton = dimensionsPanel.querySelector('.components-dropdown-menu__toggle');
+		if (!menuButton) return;
+		
+		const toolsPanelItems = dimensionsPanel.querySelectorAll('.components-tools-panel-item');
+		const hasVisibleControls = toolsPanelItems.length > 0 && 
+			Array.from(toolsPanelItems).some(item => item.querySelector('button'));
+		
+		if (!hasVisibleControls && menuButton.getAttribute('aria-expanded') === 'false') {
+			menuButton.click();
+			
+			setTimeout(() => {
+				const popover = document.querySelector('.components-dropdown-menu__popover');
+				if (popover) {
+					popover.style.opacity = '0';
+					popover.style.pointerEvents = 'none';
+				}
+				
+				const menuItems = document.querySelectorAll('.components-dropdown-menu__menu .components-menu-item__button[aria-checked="false"]');
+				menuItems.forEach(item => {
+					item.click();
+				});
+				
+				setTimeout(() => {
+					menuButton.click();
+					
+					setTimeout(() => {
+						if (popover) {
+							popover.style.opacity = '';
+							popover.style.pointerEvents = '';
+						}
+						unlinkSpacingValues();
+					}, 100);
+				}, 150);
+			}, 50);
+		} else if (hasVisibleControls) {
+			unlinkSpacingValues();
+		}
+	}
+	
+	function unlinkSpacingValues() {
+		const spacingControls = document.querySelectorAll('.spacing-sizes-control');
+		spacingControls.forEach(control => {
+			const linkButton = control.querySelector('.spacing-sizes-control__header button.components-button.has-icon');
+			if (linkButton) {
+				const svg = linkButton.querySelector('svg path');
+				if (svg) {
+					const pathD = svg.getAttribute('d');
+					if (pathD && pathD.includes('M10 17.389H8.444A5.194')) {
+						linkButton.click();
+					}
+				}
+			}
+		});
+	}
+	
+	if (wp.data) {
+		let lastBlockId = null;
+		wp.data.subscribe(() => {
+			const selectedBlock = wp.data.select('core/block-editor').getSelectedBlock();
+			if (selectedBlock && selectedBlock.clientId !== lastBlockId) {
+				lastBlockId = selectedBlock.clientId;
+				setTimeout(enableAndExpandSpacingControls, 250);
+			}
+		});
+	}
+})();
+//#endregion
