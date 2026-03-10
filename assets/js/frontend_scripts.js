@@ -40,6 +40,18 @@ class Accordion {
 		// Add padding to account for border spacing
 		this.padding = 36;
 		this.paddingOpen = 55;
+
+		// Handle browser find-in-page opening a closed accordion without a click event
+		this.observer = new MutationObserver(() => {
+			if (this.el.open && !this.isExpanding && !this.isClosing) {
+				const innerContent = this.el.querySelector('.wp-block-group');
+				if (innerContent) {
+					innerContent.style.transition = 'opacity 0.3s';
+					innerContent.style.opacity = '1';
+				}
+			}
+		});
+		this.observer.observe(this.el, { attributes: true, attributeFilter: ['open'] });
 	}
 	
 	onClick(e) {
