@@ -20,6 +20,48 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
+//#region Grid auto-fit / max-columns for Group Blocks
+(function() {
+	function modifyGridRule(el, transform) {
+		const classes = Array.from(el.classList);
+		Array.from(document.styleSheets).forEach(function(sheet) {
+			try {
+				Array.from(sheet.cssRules ?? []).forEach(function(rule) {
+					if (!(rule instanceof CSSStyleRule)) return;
+					const colValue = rule.style.getPropertyValue('grid-template-columns');
+					if (!colValue) return;
+					if (!classes.some(function(cls) { return rule.selectorText.includes('.' + cls); })) return;
+					const newValue = transform(colValue);
+					if (newValue !== colValue) {
+						rule.style.setProperty('grid-template-columns', newValue);
+					}
+				});
+			} catch(e) {}
+		});
+	}
+
+	// Max-columns blocks: rebuild the grid-template-columns value from scratch.
+	// Also handles auto-fit when the attribute is set alongside max-columns.
+	document.querySelectorAll('[data-grid-max-columns]').forEach(function(el) {
+		const maxCols = parseInt(el.dataset.gridMaxColumns, 10);
+		const minWidth = el.dataset.gridMinWidth ?? '250px';
+		const fillMode = el.classList.contains('is-grid-auto-fit') ? 'auto-fit' : 'auto-fill';
+
+		modifyGridRule(el, function() {
+			return `repeat(${fillMode}, minmax(max(min(${minWidth}, 100%), calc(100% / ${maxCols})), 1fr))`;
+		});
+	});
+
+	// Auto-fit only (no max-columns): replace auto-fill with auto-fit in the existing rule.
+	document.querySelectorAll('.is-grid-auto-fit:not([data-grid-max-columns])').forEach(function(el) {
+		modifyGridRule(el, function(colValue) {
+			return colValue.replace('auto-fill', 'auto-fit');
+		});
+	});
+})();
+//#endregion Grid auto-fit / max-columns for Group Blocks
+
+//#region Accordions
 class Accordion {
 	constructor(el) {
 		// Store the <details> element
@@ -160,3 +202,4 @@ class Accordion {
 document.querySelectorAll('details').forEach((el) => {
 	new Accordion(el);
 });
+//#endregion Accordions
